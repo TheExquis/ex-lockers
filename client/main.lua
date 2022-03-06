@@ -15,6 +15,7 @@ Citizen.CreateThread(function()
                 DisableControlAction(0, 47)
                 if IsDisabledControlJustPressed(0, 47) then
                     ESX.TriggerServerCallback("ts-lockers:getLockers", function(data) 
+                        TriggerServerEvent('ts-lockers:LoadStashes')
                         TriggerEvent("ts-lockers:OpenMenu", {locker = k, info = data})
                     end, k)
                     
