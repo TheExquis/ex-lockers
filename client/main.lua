@@ -1,6 +1,8 @@
 local ESX = exports['es_extended']:getSharedObject()
 
---[[Citizen.CreateThread(function()
+
+if Config.DrawText and not Config.Target then
+Citizen.CreateThread(function()
     local sleep = 3000
     local nearArea = false
     while true do
@@ -24,7 +26,10 @@ local ESX = exports['es_extended']:getSharedObject()
             sleep = 0
         end
     end
-end)]]--
+end)
+end
+
+if Config.Target and not Config.DrawText then
 onInteract = function(targetName,optionName,vars,entityHit)
     local tony = vars
     if optionName == "open_locker" then
@@ -68,7 +73,7 @@ Citizen.CreateThread(function()
     end
 end)
 
-
+end
 
 RegisterNetEvent("ts-lockers:OpenMenu", function(data)
     local myMenu = {
@@ -340,7 +345,7 @@ RegisterNetEvent("ts-lockers:CreateLocker", function(data)
         end
       end)]]--
 end)
---[[
+
 function DrawText3Ds(x, y, z, text)
     local onScreen, _x, _y = World3dToScreen2d(x, y, z)
     local px, py, pz = table.unpack(GetGameplayCamCoords())
@@ -356,4 +361,3 @@ function DrawText3Ds(x, y, z, text)
     local factor = (string.len(text)) / 500
     DrawRect(_x, _y + 0.0125, 0.015 + factor, 0.03, 0, 0, 0, 80)
 end
-]]--
