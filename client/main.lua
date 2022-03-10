@@ -27,7 +27,7 @@ Citizen.CreateThread(function()
             inZone = true
             sleep = 0
         end
-        if not nearArea and inZone then
+        if not nearArea and inZone then           
             sleep = 3000
         end
         Citizen.Wait(sleep)
@@ -315,8 +315,10 @@ RegisterNetEvent('ts-lockers:client:OpenLocker', function(info)
     })
     if keyboard then
         if keyboard[1].input == nil then return end
-            if tostring(keyboard[1].input) == tostring(data.password) then  
-                exports.ox_inventory:openInventory('stash', data.lockerid)
+            if tostring(keyboard[1].input) == tostring(data.password) then 
+                exports.ox_inventory:setStashTarget(data.lockerid, nil)
+                ExecuteCommand('inv2')
+                exports.ox_inventory:setStashTarget(nil)
             else
                 ESX.ShowNotification("Wrong Password")
             end
