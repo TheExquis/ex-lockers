@@ -14,16 +14,19 @@ RegisterNetEvent("ts-lockers:server:CreateLocker", function(code, area)
                     end
                 end
                 if allowed then
-                    exports.oxmysql:insert('INSERT INTO tslockers (owner, password, branch) VALUES (?, ?, ?)', {xPlayer.getIdentifier(), passcode, branch}, function(id)
+		    local lockerid = xPlayer.identifier..'-'..branch
+                    exports.oxmysql:insert('INSERT INTO tslockers (lockerid, owner, password, branch) VALUES (?, ?, ?)', {lockerid, xPlayer.getIdentifier(), passcode, branch}, function(id)
                         print(xPlayer.getName()..' Created A Locker in '..branch)
-                        exports.ox_inventory:RegisterStash(id, "Locker No: "..id, 50, 5000000)
+                        exports.ox_inventory:RegisterStash(lockerid, "Locker No: "..id, 50, 5000000)
                         TriggerClientEvent('esx:showNotification', xPlayer.source, 'You Created Locker with Locker ID: ~r~'..id..'~s~')
                     end)
                 else
                     TriggerClientEvent('esx:showNotification', xPlayer.source, 'You can only create 1 locker in this area')
                 end
             else
-                exports.oxmysql:insert('INSERT INTO tslockers (owner, password, branch) VALUES (?, ?, ?)', {xPlayer.getIdentifier(), passcode, branch}, function(id)
+		local lockerid = xPlayer.identifier..'-'..branch
+                exports.oxmysql:insert('INSERT INTO tslockers (lockerid,owner, password, branch) VALUES (?, ?, ?)', {lockerid,xPlayer.getIdentifier(), passcode, branch}, function(id)
+								
                     print(xPlayer.getName()..' Created A Locker in '..branch)
                     exports.ox_inventory:RegisterStash(id, "Locker No: "..id, 50, 5000000)
                     TriggerClientEvent('esx:showNotification', xPlayer.source, 'You Created Locker with Locker ID: ~r~'..id..'~s~')
