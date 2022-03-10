@@ -5,4 +5,4 @@ CREATE TABLE IF NOT EXISTS `tslockers` (
   `password` int(11) DEFAULT 0,
   `branch` varchar(50) NOT NULL,
   KEY `lockerid` (`lockerid`)
-) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
