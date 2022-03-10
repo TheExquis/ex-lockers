@@ -4,9 +4,9 @@ local ESX = exports['es_extended']:getSharedObject()
 if Config.DrawText and not Config.Target then
 Citizen.CreateThread(function()
     local sleep = 3000
-    local nearArea = false
+    local inZone = false
     while true do
-        Citizen.Wait(sleep)
+        local nearArea = false
         local coords = GetEntityCoords(PlayerPedId())
         for k, v in pairs(Config.LockerZone) do
             local dist = #(vec3(v.x,v.y,v.z)-coords)
@@ -23,9 +23,15 @@ Citizen.CreateThread(function()
                 DrawText3Ds(v.x,v.y,v.z+1.0, "Press ~r~[G]~s~ To Open ~y~Locker~s~")
             end
         end
-        if nearArea then
+        if nearArea and not inZone then
+            inZone = true
             sleep = 0
         end
+        if not nearArea and inZone then
+            sleep = 3000
+            exports.ox_inventory:setStashTarget(nil)
+        end
+        Citizen.Wait(sleep)
     end
 end)
 end
@@ -311,7 +317,8 @@ RegisterNetEvent('ts-lockers:client:OpenLocker', function(info)
     if keyboard then
         if keyboard[1].input == nil then return end
             if tostring(keyboard[1].input) == tostring(data.password) then  
-             exports.ox_inventory:openInventory('stash', {id = data.lockerid})
+             exports.ox_inventory:setStashTarget(data.lockerid, nil)
+             --exports.ox_inventory:openInventory('stash', {id = data.lockerid})
             else
                 ESX.ShowNotification("Wrong Password")
             end
