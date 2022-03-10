@@ -169,7 +169,7 @@ RegisterNetEvent('ts-lockers:LockerList', function(data)
     if arg then
     for k,v in pairs(arg) do
         idt = idt + 1
-        table.insert(myMenu, {id = idt, header = "Locker ID: "..v.lockerid, txt = 'Owner: '..v.playername, params = {event = 'ts-lockers:client:OpenLocker', isServer = false, args = {data = v}}})
+        table.insert(myMenu, {id = idt, header = "Locker ID: "..v.dbid, txt = 'Owner: '..v.playername, params = {event = 'ts-lockers:client:OpenLocker', isServer = false, args = {data = v}}})
     end
     end
     exports['zf_context']:openMenu(myMenu)
@@ -237,7 +237,7 @@ RegisterNetEvent('ts-lockers:LockerListDelete', function(data)
     for k,v in pairs(arg) do
         if PlayerData.identifier == v.owner then
         idt = idt + 1
-        table.insert(myMenu, {id = idt, header = "Locker ID: "..v.lockerid, txt = 'Owner: '..v.playername, params = {event = 'ts-lockers:client:DeleteLocker', isServer = false, args = {data = v, id = v.lockerid}}})
+        table.insert(myMenu, {id = idt, header = "Locker ID: "..v.dbid, txt = 'Owner: '..v.playername, params = {event = 'ts-lockers:client:DeleteLocker', isServer = false, args = {data = v, id = v.lockerid}}})
         end
     end
     end
