@@ -17,7 +17,7 @@ RegisterNetEvent("ts-lockers:server:CreateLocker", function(code, area)
 		    local lockerid = xPlayer.identifier..'-'..branch
                     exports.oxmysql:insert('INSERT INTO tslockers (lockerid, owner, password, branch) VALUES (?, ?, ?, ?)', {lockerid, xPlayer.getIdentifier(), passcode, branch}, function(id)
                         print(xPlayer.getName()..' Created A Locker in '..branch)
-                        exports.ox_inventory:RegisterStash(lockerid, "Locker No: "..id, 50, 5000000)
+                        exports.ox_inventory:RegisterStash(lockerid, "Locker No:"..id, 50, 5000000)
                         TriggerClientEvent('esx:showNotification', xPlayer.source, 'You Created Locker with Locker ID: ~r~'..id..'~s~')
                     end)
                 else
@@ -28,7 +28,7 @@ RegisterNetEvent("ts-lockers:server:CreateLocker", function(code, area)
                 exports.oxmysql:insert('INSERT INTO tslockers (lockerid,owner, password, branch) VALUES (?, ?, ?, ?)', {lockerid,xPlayer.getIdentifier(), passcode, branch}, function(id)
 								
                     print(xPlayer.getName()..' Created A Locker in '..branch)
-                    exports.ox_inventory:RegisterStash(id, "Locker No: "..id, 50, 5000000)
+                    exports.ox_inventory:RegisterStash(lockerid, "Locker No:"..id, 50, 5000000)
                     TriggerClientEvent('esx:showNotification', xPlayer.source, 'You Created Locker with Locker ID: ~r~'..id..'~s~')
                 end)
             end
@@ -62,7 +62,7 @@ RegisterNetEvent('ts-lockers:LoadStashes', function()
         exports.oxmysql:query('SELECT * FROM tslockers', {}, function(result)
             if result[1] then
 	  	        for k,v in pairs(result) do
-			        exports.ox_inventory:RegisterStash(v.lockerid, "Locker No: "..v.lockerid, 50, 5000000)
+			        exports.ox_inventory:RegisterStash(v.lockerid, "Locker No:"..v.dbid, 50, 5000000)
                 end
             end
         end)
@@ -100,7 +100,7 @@ AddEventHandler('onServerResourceStart', function(resourceName)
         exports.oxmysql:query('SELECT * FROM tslockers', {}, function(result)
             if result[1] then
 	  	        for k,v in pairs(result) do
-			        exports.ox_inventory:RegisterStash(v.lockerid, "Locker No: "..v.lockerid, 50, 5000000)
+			        exports.ox_inventory:RegisterStash(v.lockerid, "Locker No:"..v.dbid, 50, 5000000)
                 end
             end
         end)
