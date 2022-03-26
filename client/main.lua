@@ -102,8 +102,8 @@ RegisterNetEvent("ts-lockers:OpenMenu", function(data)
         },
         {
             id = 3,
-            header = 'Open Locker',
-            txt = 'Open Existing Locker',
+            header = 'Locker Menu',
+            txt = 'Open Existing Locker Menu',
             params = {
                 event = 'ts-lockers:LockerList',
                 isServer = false,
@@ -115,6 +115,19 @@ RegisterNetEvent("ts-lockers:OpenMenu", function(data)
         },
         {
             id = 4,
+            header = 'Open Your Locker',
+            txt = 'Open Your Locker',
+            params = {
+                event = 'ts-lockers:OpenSelfLocker',
+                isServer = false,
+                args = {
+                    arg = data.info,
+                    branch = data.locker
+                }
+            }
+        },
+        {
+            id = 5,
             header = 'Delete Locker',
             txt = 'Delete Existing Locker',
             params = {
@@ -127,7 +140,7 @@ RegisterNetEvent("ts-lockers:OpenMenu", function(data)
             }
         },
         {
-            id = 5,
+            id = 6,
             header = 'Change Locker Password',
             txt = 'Change Existing Locker Password',
             params = {
@@ -300,7 +313,15 @@ RegisterNetEvent('ts-lockers:client:DeleteLocker', function(info)
     }
     exports['zf_context']:openMenu(myMenu)
 end)
-
+RegisterNetEvent('ts-lockers:OpenSelfLocker', function(info)
+        local lockers = info.arg
+        local branch = info.branch
+        for k,v in pairs(lockers) do
+            if PlayerData.identifier == v.owner then
+                TriggerEvent('ox_inventory:openInventory', 'stash', {id = v.dbid})  
+            end
+        end
+end)
 RegisterNetEvent('ts-lockers:client:OpenLocker', function(info)
     local data = info.data
     local keyboard = exports["nh-keyboard"]:KeyboardInput({
@@ -316,9 +337,7 @@ RegisterNetEvent('ts-lockers:client:OpenLocker', function(info)
     if keyboard then
         if keyboard[1].input == nil then return end
             if tostring(keyboard[1].input) == tostring(data.password) then 
-                exports.ox_inventory:setStashTarget(data.lockerid, nil)
-                ExecuteCommand('inv2')
-                exports.ox_inventory:setStashTarget(nil)
+                TriggerEvent('ox_inventory:openInventory', 'stash', {id = data.dbid})
             else
                 ESX.ShowNotification("Wrong Password")
             end
