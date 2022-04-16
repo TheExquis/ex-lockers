@@ -314,13 +314,16 @@ RegisterNetEvent('ts-lockers:client:DeleteLocker', function(info)
     exports['zf_context']:openMenu(myMenu)
 end)
 RegisterNetEvent('ts-lockers:OpenSelfLocker', function(info)
-        local lockers = info.arg
-        local branch = info.branch
-        for k,v in pairs(lockers) do
-            if PlayerData.identifier == v.owner then
-                TriggerEvent('ox_inventory:openInventory', 'stash', {id = v.dbid})  
-            end
+    local Ply = ESX.GetPlayerData()
+    local lockers = info.arg
+    local branch = info.branch
+    for k,v in pairs(lockers) do
+        if Ply.identifier == v.owner then
+            exports.ox_inventory:setStashTarget(v.lockerid, nil)
+            ExecuteCommand('inv2')
+            exports.ox_inventory:setStashTarget(nil)
         end
+    end
 end)
 RegisterNetEvent('ts-lockers:client:OpenLocker', function(info)
     local data = info.data
