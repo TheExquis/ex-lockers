@@ -10,4 +10,4 @@ Locker System For ox_inventory.
 - Ability to Delete Lockers
 
 #Dependency
-- nh-keyboard - https://github.com/tony-stark-17/nh-keyboard
+- ox_lib - https://github.com/overextended/ox_lib
