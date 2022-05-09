@@ -82,237 +82,143 @@ end)
 end
 
 RegisterNetEvent("ts-lockers:OpenMenu", function(data)
-    local myMenu = {
-        {
-            id = 1,
-            header = data.locker..' Locker Menu',
-            txt = ''
-        },
-        {
-            id = 2,
-            header = 'Create Locker',
-            txt = 'Create A Locker',
-            params = {
+	lib.registerContext({
+        id = 'locker_menu',
+        title = 'TS Lockers',
+        options = {
+            ['Create Locker'] = {
+                description = 'Create A Locker',
+                arrow = true,
                 event = 'ts-lockers:CreateLocker',
-                isServer = false,
                 args = {
                     branch = data.locker
                 }
-            }
-        },
-        {
-            id = 3,
-            header = 'Locker Menu',
-            txt = 'Open Existing Locker Menu',
-            params = {
+            },
+			['Open Locker'] = {
+                description = 'Open Existing Locker',
+                arrow = true,
                 event = 'ts-lockers:LockerList',
-                isServer = false,
                 args = {
                     arg = data.info,
                     branch = data.locker
                 }
-            }
-        },
-        {
-            id = 4,
-            header = 'Open Your Locker',
-            txt = 'Open Your Locker',
-            params = {
+            },
+			['Open Your Locker'] = {
+                description = 'Open Self Locker',
+                arrow = true,
                 event = 'ts-lockers:OpenSelfLocker',
-                isServer = false,
                 args = {
                     arg = data.info,
                     branch = data.locker
                 }
-            }
-        },
-        {
-            id = 5,
-            header = 'Delete Locker',
-            txt = 'Delete Existing Locker',
-            params = {
+            },
+			['Delete Locker'] = {
+                description = 'Delete Existing Locker',
+                arrow = true,
                 event = 'ts-lockers:LockerListDelete',
-                isServer = false,
                 args = {
                     arg = data.info,
                     branch = data.locker
                 }
-            }
-        },
-        {
-            id = 6,
-            header = 'Change Locker Password',
-            txt = 'Change Existing Locker Password',
-            params = {
+            },
+			['Change Locker Password'] = {
+                description = 'Change Existing Locker Password',
+                arrow = true,
                 event = 'ts-lockers:LockerChangePass',
-                isServer = false,
                 args = {
                     arg = data.info,
                     branch = data.locker
                 }
             }
-        },
-    }
-    exports['zf_context']:openMenu(myMenu)
+        }
+	})
+    lib.showContext('locker_menu')
 end)
 
 RegisterNetEvent('ts-lockers:LockerList', function(data)
+	local optionTable = {}
     local arg = data.arg
-    local myMenu = {
-        {
-            id = 1,
-            header = data.branch..' Locker Menu',
-            txt = ''
-        },
-        {
-            id = 2,
-            header = ' <- Go Back',
-            txt = '',
-            params = {
-                event = 'ts-lockers:OpenMenu',
-                isServer = false,
-                args = {
-                    locker = data.branch,
-                    info = arg
-                }
-            }
-        },
-    }
-    local idt = 2
+	local idt = 2
     if arg then
     for k,v in pairs(arg) do
         idt = idt + 1
-        table.insert(myMenu, {id = idt, header = "Locker ID: "..v.dbid, txt = 'Owner: '..v.playername, params = {event = 'ts-lockers:client:OpenLocker', isServer = false, args = {data = v}}})
+		optionTable["Locker ID: "..v.dbid] = {
+			description = 'Owner: '..v.playername,
+                arrow = true,
+                event = 'ts-lockers:client:OpenLocker',
+                args = {
+                    data = v
+                }
+		}
     end
     end
-    exports['zf_context']:openMenu(myMenu)
+	lib.registerContext({
+        id = 'locker_list',
+        title = data.branch..' Locker Menu',
+		menu = "locker_menu",
+        options = optionTable
+	})
+    lib.showContext('locker_list')
 end)
 
 RegisterNetEvent('ts-lockers:LockerChangePass', function(data)
-    local arg = data.arg
-    local myMenu = {
-        {
-            id = 1,
-            header = data.branch..' Change Password Menu',
-            txt = ''
-        },
-        {
-            id = 2,
-            header = ' <- Go Back',
-            txt = '',
-            params = {
-                event = 'ts-lockers:OpenMenu',
-                isServer = false,
-                args = {
-                    locker = data.branch,
-                    info = data.arg
-                }
-            }
-        },
-    }
-    local idt = 2
-    if arg then
-    for k,v in pairs(arg) do
-        if v.playername ~= 'Not Online' then
-        idt = idt + 1
-        table.insert(myMenu, {id = idt, header = "Locker ID: "..v.lockerid, txt = 'Owner: '..v.playername, params = {event = 'ts-lockers:client:ChangePassword', isServer = false, args = {data = v}}})
+	local Ply = ESX.GetPlayerData()
+    local lockers = data.arg
+    for k,v in pairs(lockers) do
+        if Ply.identifier == v.owner then
+            TriggerEvent('ts-lockers:client:ChangePassword', {data = v})
         end
     end
-    end
-    exports['zf_context']:openMenu(myMenu)
 end)
 
 RegisterNetEvent('ts-lockers:LockerListDelete', function(data)
-    local PlayerData = ESX.GetPlayerData()
-    local arg = data.arg
-    local myMenu = {
-        {
-            id = 1,
-            header = data.branch..' Delete Locker Menu',
-            txt = ''
-        },
-        {
-            id = 2,
-            header = ' <- Go Back',
-            txt = '',
-            params = {
-                event = 'ts-lockers:OpenMenu',
-                isServer = false,
-                args = {
-                    locker = data.branch,
-                    info = data.arg
-                }
-            }
-        },
-    }
-    local idt = 2
-    if arg then
-    for k,v in pairs(arg) do
-        if PlayerData.identifier == v.owner then
-        idt = idt + 1
-        table.insert(myMenu, {id = idt, header = "Locker ID: "..v.dbid, txt = 'Owner: '..v.playername, params = {event = 'ts-lockers:client:DeleteLocker', isServer = false, args = {data = v, id = v.lockerid}}})
+	local Ply = ESX.GetPlayerData()
+    local lockers = data.arg
+    for k,v in pairs(lockers) do
+        if Ply.identifier == v.owner then
+            TriggerEvent('ts-lockers:client:DeleteLocker', {data = v,id = v.lockerid})
         end
     end
-    end
-    exports['zf_context']:openMenu(myMenu)
 end)
 
 RegisterNetEvent('ts-lockers:client:ChangePassword', function(info)
     local data = info.data
     local id = data.lockerid
-    local keyboard = exports["nh-keyboard"]:KeyboardInput({
-        header = "Input Password",
-        rows = {
-            {
-                id = 0, 
-                txt = "Password",
-                ispassword = true
-            }
-        }
-    })
-    if keyboard then
-        if keyboard[1].input == nil then return end
-            TriggerServerEvent('ts-lockers:server:ChangePass', id, keyboard[1].input)
-    end
+	local input = lib.inputDialog('TS Lockers', {
+    { type = "input", label = "Locker Password", password = true, icon = 'lock' }
+})
+	if input and input[1] then
+		TriggerServerEvent('ts-lockers:server:ChangePass', id, input[1])
+	end
 end)
 
 RegisterNetEvent('ts-lockers:client:DeleteLocker', function(info)
     local data = info.data
     local id = info.id
-    local myMenu = {
-        {
-            id = 1,
-            header = data.branch..' Delete Locker Menu',
-            txt = ''
-        },
-        {
-            id = 2,
-            header = 'Confirm',
-            txt = 'Confirm Deletion of Your Locker',
-            params = {
-                event = 'ts-lockers:server:DeleteLocker',
-                isServer = true,
+	lib.registerContext({
+        id = 'delete_locker_confirmation',
+        title = 'Delete Locker',
+		menu = 'locker_menu',
+        options = {
+            ['Confirm'] = {
+                description = 'Confirm Deletion of Your Locker',
+                arrow = true,
+                serverEvent = 'ts-lockers:server:DeleteLocker',
                 args = {
                     lockerid = id
                 }
+            },
+			['Cancel'] = {
+                description = 'Cancel Deletion of Your Locker',
+                arrow = true,
+                menu = 'locker_menu'
             }
-        },
-        {
-            id = 3,
-            header = 'Cancel',
-            txt = 'Cancel Deletion of Your Locker',
-            params = {
-                event = 'ts-lockers:OpenMenu',
-                isServer = false,
-                args = {
-                    locker = data.branch,
-                    info = data.arg
-                }
-            }
-        },
-    }
-    exports['zf_context']:openMenu(myMenu)
+			
+        }
+    })
+    lib.showContext('delete_locker_confirmation')
 end)
+
 RegisterNetEvent('ts-lockers:OpenSelfLocker', function(info)
     local Ply = ESX.GetPlayerData()
     local lockers = info.arg
@@ -325,55 +231,31 @@ RegisterNetEvent('ts-lockers:OpenSelfLocker', function(info)
         end
     end
 end)
+
 RegisterNetEvent('ts-lockers:client:OpenLocker', function(info)
     local data = info.data
-    local keyboard = exports["nh-keyboard"]:KeyboardInput({
-        header = "Input Password",
-        rows = {
-            {
-                id = 0, 
-                txt = "Password",
-                ispassword = true
-            }
-        }
-    })
-    if keyboard then
-        if keyboard[1].input == nil then return end
-            if tostring(keyboard[1].input) == tostring(data.password) then 
-                TriggerEvent('ox_inventory:openInventory', 'stash', {id = data.dbid})
+	local input = lib.inputDialog('TS Lockers', {
+    { type = "input", label = "Locker Password", password = true, icon = 'lock' }
+})
+	if input and input[1] then
+		if tostring(input[1]) == tostring(data.password) then
+                exports.ox_inventory:setStashTarget(data.lockerid, nil)
+                ExecuteCommand('inv2')
+                exports.ox_inventory:setStashTarget(nil)
             else
                 ESX.ShowNotification("Wrong Password")
             end
-    end
-    --[[exports['Boost-Numpad']:openNumpad(true,data.password,true,function(correct)
-        if correct then
-            print(data.lockerid)
-            TriggerEvent('ox_inventory:openInventory', 'stash', {id = data.lockerid})
-        end
-      end)]]--
+	end
 end)
 
 RegisterNetEvent("ts-lockers:CreateLocker", function(data)
     local area = data.branch
-    local keyboard = exports["nh-keyboard"]:KeyboardInput({
-        header = "Create Password",
-        rows = {
-            {
-                id = 0, 
-                txt = "Password",
-                ispassword = true
-            }
-        }
-    })
-    if keyboard then
-        if keyboard[1].input == nil then return end
-            TriggerServerEvent("ts-lockers:server:CreateLocker", keyboard[1].input, area)
-    end
-    --[[exports['Boost-Numpad']:openNumpad(false,1234,true,function(code)
-        if code then
-          TriggerServerEvent("ts-lockers:server:CreateLocker", code, area)
-        end
-      end)]]--
+	local input = lib.inputDialog('TS Lockers - Create Password', {
+    { type = "input", label = "Locker Password", password = true, icon = 'lock' }
+})
+	if input and input[1] then
+		TriggerServerEvent("ts-lockers:server:CreateLocker", input[1], area)
+	end
 end)
 
 function DrawText3Ds(x, y, z, text)

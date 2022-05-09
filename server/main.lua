@@ -45,7 +45,7 @@ RegisterNetEvent('ts-lockers:server:DeleteLocker', function(id)
         exports.oxmysql:query('SELECT * FROM tslockers', {}, function(result)
             if result[1] then
 	  	        for k,v in pairs(result) do
-                    if tonumber(v.lockerid) == tonumber(lockerid) and v.owner == xPlayer.getIdentifier() then
+                    if tostring(v.lockerid) == tostring(lockerid) and v.owner == xPlayer.getIdentifier() then
                         MySQL.query('DELETE FROM ox_inventory WHERE name = ?', { v.lockerid })
                         exports.oxmysql:query('DELETE FROM tslockers WHERE lockerid = ?', {v.lockerid}, function(result)
                             print(xPlayer.getName()..'Deleted Locker ID: '..v.lockerid)
@@ -72,12 +72,11 @@ RegisterNetEvent('ts-lockers:server:ChangePass', function(lid, pass)
     local lockerid = lid
     local password = pass
     local xPlayer = ESX.GetPlayerFromId(source)
-    print(lockerid)
     if xPlayer and lockerid then
         exports.oxmysql:query('SELECT * FROM tslockers', {}, function(result)
             if result[1] then
 	  	        for k,v in pairs(result) do
-                    if tonumber(v.lockerid) == tonumber(lockerid) then
+                    if tostring(v.lockerid) == tostring(lockerid) then
                         if v.owner == xPlayer.getIdentifier() then
                         exports.oxmysql:update('UPDATE tslockers SET password = ? WHERE lockerid = ? ', {password, lockerid}, function(affectedRows)
                             if affectedRows then
