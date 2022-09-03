@@ -9,5 +9,4 @@ Locker System For ox_inventory.
 
 #Dependency
 - ox_lib - https://github.com/overextended/ox_lib
-- tony_peds - https://github.com/tony-stark-17/tony_peds
-- fivem-target - https://github.com/meta-hub/fivem-target
+- oxmysql - https://github.com/overextended/oxmysql
