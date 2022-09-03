@@ -39,7 +39,7 @@ RegisterNetEvent("ts-lockers:server:CreateLocker", function(code, area)
 end)
 
 RegisterNetEvent('ts-lockers:server:DeleteLocker', function(id)
-    local lockerid = id.lockerid
+    local lockerid = id
     local xPlayer = ESX.GetPlayerFromId(source)
     if xPlayer and lockerid then
         exports.oxmysql:query('SELECT * FROM tslockers', {}, function(result)
