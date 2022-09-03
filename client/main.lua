@@ -35,7 +35,7 @@ end)
 RegisterNetEvent("ts-lockers:OpenMenu", function(data)
 	lib.registerContext({
         id = 'locker_menu',
-        title = 'TS Lockers',
+        title = 'EX Lockers',
         options = {
             ['Create Locker'] = {
                 description = 'Create A Locker',
