@@ -6,5 +6,3 @@ Config.LockerZone = {
 }
 
 Config.DrawText = true -- SHOULD BE FALSE IF TARGET IS TRUE
-
-Config.Target = false -- SHOULD BE FALSE IF DrawText IS TRUE
