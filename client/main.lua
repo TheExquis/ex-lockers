@@ -1,7 +1,5 @@
 local ESX = exports['es_extended']:getSharedObject()
 
-
-if Config.DrawText and not Config.Target then
 Citizen.CreateThread(function()
     local sleep = 3000
     local inZone = false
@@ -33,53 +31,6 @@ Citizen.CreateThread(function()
         Citizen.Wait(sleep)
     end
 end)
-end
-
-if Config.Target and not Config.DrawText then
-onInteract = function(targetName,optionName,vars,entityHit)
-    local tony = vars
-    if optionName == "open_locker" then
-        ESX.TriggerServerCallback("ts-lockers:getLockers", function(data) 
-            TriggerServerEvent('ts-lockers:LoadStashes')
-            TriggerEvent("ts-lockers:OpenMenu", {locker = tony.index, info = data})
-        end, tony.index)
-    end
-end
-
-Citizen.CreateThread(function()
-    for k, v in pairs(Config.LockerZone) do
-        exports["fivem-target"]:AddTargetPoint({
-            name = k.."Target",
-            label = "TKRP Lockers",
-            icon = "fas fa-archive",
-            point = vec3(v.x,v.y,v.z),
-            interactDist = 2.5,
-            onInteract = onInteract,
-            options = {
-              {
-                name = "open_locker",
-                label = "Open Locker Menu"
-              },          
-            },
-            vars = {
-              index = k
-            }
-          })
-        exports["tony_peds"]:NewPed(`cs_casey`, k, {
-            coords = vector3(v.x,v.y,v.z),
-            radius = 50.0,
-            heading = v.w,
-            useZ = true,
-            debug = false
-        }, {
-            invincible = true,
-            canMove = true,
-            ignorePlayer = true
-        })
-    end
-end)
-
-end
 
 RegisterNetEvent("ts-lockers:OpenMenu", function(data)
 	lib.registerContext({
