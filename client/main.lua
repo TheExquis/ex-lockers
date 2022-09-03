@@ -1,35 +1,20 @@
 local ESX = exports['es_extended']:getSharedObject()
 
-Citizen.CreateThread(function()
-    local sleep = 3000
-    local inZone = false
-    while true do
-        local nearArea = false
-        local coords = GetEntityCoords(PlayerPedId())
-        for k, v in pairs(Config.LockerZone) do
-            local dist = #(v - coords)
-            if dist < 5 then
-                nearArea = true
-                DisableControlAction(0, 47)
+CreateThread(function()
+	for k, v in pairs(Config.LockerZone) do
+	    v.point = lib.points.new(v, 5)
+			
+	    function v.point:nearby()
+    		DrawText3Ds(v.x,v.y,v.z+1.0, "Press ~r~[G]~s~ To Open ~y~Locker~s~")
+		DisableControlAction(0, 47)
                 if IsDisabledControlJustPressed(0, 47) then
                     ESX.TriggerServerCallback("ts-lockers:getLockers", function(data) 
                         TriggerServerEvent('ts-lockers:LoadStashes')
                         TriggerEvent("ts-lockers:OpenMenu", {locker = k, info = data})
-                    end, k)
-                    
+                    end, k)   
                 end
-                DrawText3Ds(v.x,v.y,v.z+1.0, "Press ~r~[G]~s~ To Open ~y~Locker~s~")
-            end
+	    end
         end
-        if nearArea and not inZone then
-            inZone = true
-            sleep = 0
-        end
-        if not nearArea and inZone then           
-            sleep = 3000
-        end
-        Citizen.Wait(sleep)
-    end
 end)
 
 RegisterNetEvent("ts-lockers:OpenMenu", function(data)
