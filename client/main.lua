@@ -1,4 +1,17 @@
-local ESX = exports['es_extended']:getSharedObject()
+local ESX,QBCore = nil,nil
+local PlayerData = {}
+RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
+    if not QBCore then
+        QBCore = exports['qb-core']:GetCoreObject()
+    end
+    PlayerData = QBCore.Functions.GetPlayerData()
+end)
+RegisterNetEvent('esx:playerLoaded', function ()
+    if not ESX then
+        ESX = exports['es_extended']:getSharedObject()
+    end
+    PlayerData = ESX.GetPlayerData()
+end)
 
 CreateThread(function()
     for k, v in pairs(Config.LockerZone) do
@@ -7,8 +20,7 @@ CreateThread(function()
             DrawText3Ds(v.coords.x, v.coords.y, v.coords.z + 1.0, "Press ~r~[G]~s~ To Open ~y~Locker~s~")
             DisableControlAction(0, 47)
             if IsDisabledControlJustPressed(0, 47) then
-                ESX.TriggerServerCallback("ts-lockers:getLockers", function(data)
-                    TriggerServerEvent('ts-lockers:LoadStashes')
+                lib.callback('ts-lockers:getLockers', false, function(data)
                     TriggerEvent("ts-lockers:OpenMenu", { locker = k, info = data })
                 end, k)
             end
@@ -96,40 +108,56 @@ RegisterNetEvent('ts-lockers:LockerList', function(data)
 end)
 
 RegisterNetEvent('ts-lockers:LockerChangePass', function(data)
-    local Ply = ESX.GetPlayerData()
+    local plyIdentifier = PlayerData.identifier or PlayerData.citizenid
     local lockers = data.arg
     if lockers then
         local exist = false
         for k, v in pairs(lockers) do
-            if Ply.identifier == v.owner then
+            if plyIdentifier == v.owner then
                 exist = true
                 TriggerEvent('ts-lockers:client:ChangePassword', { data = v })
             end
         end
         if not exist then
-            ESX.ShowNotification("You don't have a locker")
+            lib.defaultNotify({
+                title = 'Lockers',
+                description = 'You don\'t have a locker',
+                status = 'error'
+            })
         end
     else
-        ESX.ShowNotification("You don't have a locker")
+        lib.defaultNotify({
+            title = 'Lockers',
+            description = 'You don\'t have a locker',
+            status = 'error'
+        })
     end
 end)
 
 RegisterNetEvent('ts-lockers:LockerListDelete', function(data)
-    local Ply = ESX.GetPlayerData()
+    local plyIdentifier = PlayerData.identifier or PlayerData.citizenid
     local lockers = data.arg
     if lockers then
         local exist = false
         for k, v in pairs(lockers) do
-            if Ply.identifier == v.owner then
+            if plyIdentifier == v.owner then
                 exist = true
                 TriggerEvent('ts-lockers:client:DeleteLocker', { data = v, id = v.lockerid })
             end
         end
         if not exist then
-            ESX.ShowNotification("You don't have a locker")
+            lib.defaultNotify({
+                title = 'Lockers',
+                description = 'You don\'t have a locker',
+                status = 'error'
+            })
         end
     else
-        ESX.ShowNotification("You don't have a locker")
+        lib.defaultNotify({
+            title = 'Lockers',
+            description = 'You don\'t have a locker',
+            status = 'error'
+        })
     end
 end)
 
@@ -144,7 +172,6 @@ RegisterNetEvent('ts-lockers:client:ChangePassword', function(info)
 end)
 
 RegisterNetEvent('ts-lockers:client:DeleteLocker', function(info)
-    local data = info.data
     local id = info.id
     lib.registerContext({
         id = 'delete_locker_confirmation',
@@ -168,23 +195,43 @@ RegisterNetEvent('ts-lockers:client:DeleteLocker', function(info)
     lib.showContext('delete_locker_confirmation')
 end)
 
+function OpenTSLocker(lid)
+    if Config.OXInventory then
+        exports.ox_inventory:openInventory('stash', lid)
+    elseif Config.QBInventory then
+        TriggerEvent("inventory:client:SetCurrentStash", lid)
+        TriggerServerEvent("inventory:server:OpenInventory", "stash", lid, {
+            maxweight = Config.MaxWeight,
+            slots = Config.MaxSlots,
+        })
+    end
+end
+
+
 RegisterNetEvent('ts-lockers:OpenSelfLocker', function(info)
-    local Ply = ESX.GetPlayerData()
+    local plyIdentifier = PlayerData.identifier or PlayerData.citizenid
     local lockers = info.arg
-    local branch = info.branch
     if lockers then
         local exist = false
         for k, v in pairs(lockers) do
-            if Ply.identifier == v.owner then
+            if plyIdentifier == v.owner then
                 exist = true
-                exports.ox_inventory:openInventory('stash', v.lockerid)
+                OpenTSLocker(v.lockerid) 
             end
         end
         if not exist then
-            ESX.ShowNotification("You don't have a locker")
+            lib.defaultNotify({
+                title = 'Lockers',
+                description = 'You don\'t have a locker',
+                status = 'error'
+            })
         end
     else
-        ESX.ShowNotification("You don't have a locker")
+        lib.defaultNotify({
+            title = 'Lockers',
+            description = 'You don\'t have a locker',
+            status = 'error'
+        })
     end
 end)
 
@@ -194,9 +241,13 @@ RegisterNetEvent('ts-lockers:client:OpenLocker', function(info)
         { { type = "input", label = "Locker Password", password = true, icon = 'lock' } })
     if input and input[1] then
         if tostring(input[1]) == tostring(data.password) then
-            exports.ox_inventory:openInventory('stash', data.lockerid)
+            OpenTSLocker(data.lockerid)
         else
-            ESX.ShowNotification("Wrong Password")
+            lib.defaultNotify({
+                title = 'Lockers',
+                description = 'Wrong Password',
+                status = 'error'
+            })
         end
     end
 end)
@@ -212,8 +263,6 @@ end)
 
 function DrawText3Ds(x, y, z, text)
     local onScreen, _x, _y = World3dToScreen2d(x, y, z)
-    local px, py, pz = table.unpack(GetGameplayCamCoords())
-
     SetTextScale(0.32, 0.32)
     SetTextFont(4)
     SetTextProportional(1)
