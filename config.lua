@@ -1,5 +1,9 @@
 Config = {}
 
+Config.QBInventory = false
+Config.OXInventory = true
+Config.MaxSlots = 50
+Config.MaxWeight = 5000000
 Config.LockerZone = {
     Legion2 = {
         coords = vector3(-2031.3180, -464.9169, 10.6040)
