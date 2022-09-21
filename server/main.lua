@@ -105,6 +105,8 @@ RegisterNetEvent('ts-lockers:server:DeleteLocker', function(id)
                             MySQL.query('DELETE FROM ox_inventory WHERE name = ?', { v.lockerid })
                         elseif Config.QBInventory then
                             MySQL.query('DELETE FROM stashitems WHERE stash = ?', { v.lockerid })
+                        elseif Config.ChezzaInv then
+                            MySQL.query('DELETE FROM inventories WHERE identifier = ?', { v.lockerid })
                         end
                         MySQL.query('DELETE FROM tslockers WHERE lockerid = ?', {v.lockerid}, function(result)
                             TriggerClientEvent('ox_lib:defaultNotify', src, {
@@ -162,6 +164,8 @@ AddEventHandler('onServerResourceStart', function(resourceName)
             while GetResourceState('ox_inventory') ~= 'started' do Wait(50) end
         elseif Config.QBInventory then
             while GetResourceState('qb-inventory') ~= 'started' do Wait(50) end
+        elseif Config.ChezzaInv then
+            while GetResourceState('inventory') ~= 'started' do Wait(50) end
         end
         MySQL.query('SELECT * FROM tslockers', {}, function(result)
             if result[1] then
