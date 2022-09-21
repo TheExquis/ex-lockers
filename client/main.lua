@@ -204,6 +204,15 @@ function OpenTSLocker(lid)
             maxweight = Config.MaxWeight,
             slots = Config.MaxSlots,
         })
+    elseif Config.ChezzaInv then
+        TriggerEvent('inventory:openInventory', {
+            type = "stash",
+            id = lid,
+            title = lid,
+            weight = Config.MaxWeight,
+            delay = 200,
+            save = true
+        })
     end
 end
 
