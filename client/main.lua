@@ -109,6 +109,9 @@ end)
 
 RegisterNetEvent('ts-lockers:LockerChangePass', function(data)
     local plyIdentifier = PlayerData.identifier or PlayerData.citizenid
+    if not plyIdentifier then
+        plyIdentifier = (ESX and ESX.GetPlayerData().identifier) or (QBCore and QBCore.Functions.GetPlayerData())
+    end
     local lockers = data.arg
     if lockers then
         local exist = false
