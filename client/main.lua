@@ -211,7 +211,7 @@ function OpenTSLocker(lid)
         TriggerEvent('inventory:openInventory', {
             type = "stash",
             id = lid,
-            title = lid,
+            title = "Locker",
             weight = Config.MaxWeight,
             delay = 200,
             save = true
