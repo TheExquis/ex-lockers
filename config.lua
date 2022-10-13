@@ -14,4 +14,4 @@ Config.LockerZone = {
     },
 }
 
-Config.DrawText = true -- SHOULD BE FALSE IF TARGET IS TRUE
+Config.DrawText = true
