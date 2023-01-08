@@ -1,15 +1,16 @@
 local ESX,QBCore = nil,nil
 local PlayerData = {}
-RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
-    if not QBCore then
+CreateThread(function ()
+    if GetResourceState('es_extended') == 'started' then
+        ESX = exports['es_extended']:getSharedObject()
+    elseif GetResourceState('qb-core') == 'started' then
         QBCore = exports['qb-core']:GetCoreObject()
     end
+end)
+RegisterNetEvent('QBCore:Client:OnPlayerLoaded', function()
     PlayerData = QBCore.Functions.GetPlayerData()
 end)
 RegisterNetEvent('esx:playerLoaded', function ()
-    if not ESX then
-        ESX = exports['es_extended']:getSharedObject()
-    end
     PlayerData = ESX.GetPlayerData()
 end)
 
@@ -27,7 +28,6 @@ CreateThread(function()
         end
     end
 end)
-
 
 RegisterNetEvent("ts-lockers:OpenMenu", function(data)
     lib.registerContext({
@@ -113,6 +113,7 @@ RegisterNetEvent('ts-lockers:LockerChangePass', function(data)
         plyIdentifier = (ESX and ESX.GetPlayerData().identifier) or (QBCore and QBCore.Functions.GetPlayerData())
     end
     local lockers = data.arg
+    print(lockers)
     if lockers then
         local exist = false
         for k, v in pairs(lockers) do
@@ -121,6 +122,7 @@ RegisterNetEvent('ts-lockers:LockerChangePass', function(data)
                 TriggerEvent('ts-lockers:client:ChangePassword', { data = v })
             end
         end
+        print(exist,plyIdentifier)
         if not exist then
             lib.defaultNotify({
                 title = 'Lockers',
@@ -139,10 +141,14 @@ end)
 
 RegisterNetEvent('ts-lockers:LockerListDelete', function(data)
     local plyIdentifier = PlayerData.identifier or PlayerData.citizenid
+    if not plyIdentifier then
+        plyIdentifier = (ESX and ESX.GetPlayerData().identifier) or (QBCore and QBCore.Functions.GetPlayerData())
+    end
     local lockers = data.arg
     if lockers then
         local exist = false
         for k, v in pairs(lockers) do
+            print(plyIdentifier,v.owner)
             if plyIdentifier == v.owner then
                 exist = true
                 TriggerEvent('ts-lockers:client:DeleteLocker', { data = v, id = v.lockerid })
@@ -211,7 +217,7 @@ function OpenTSLocker(lid)
         TriggerEvent('inventory:openInventory', {
             type = "stash",
             id = lid,
-            title = "Locker",
+            title = lid,
             weight = Config.MaxWeight,
             delay = 200,
             save = true
@@ -222,10 +228,14 @@ end
 
 RegisterNetEvent('ts-lockers:OpenSelfLocker', function(info)
     local plyIdentifier = PlayerData.identifier or PlayerData.citizenid
+    if not plyIdentifier then
+        plyIdentifier = (ESX and ESX.GetPlayerData().identifier) or (QBCore and QBCore.Functions.GetPlayerData())
+    end
     local lockers = info.arg
     if lockers then
         local exist = false
         for k, v in pairs(lockers) do
+            print(plyIdentifier,v.owner)
             if plyIdentifier == v.owner then
                 exist = true
                 OpenTSLocker(v.lockerid) 
