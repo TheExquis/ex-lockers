@@ -16,7 +16,7 @@ end)
 
 CreateThread(function()
     for k, v in pairs(Config.LockerZone) do
-        v.point = lib.points.new(v.coords, 5)
+        v.point = lib.points.new(v.coords, v.DrawDistance)
         function v.point:nearby()
             DrawText3Ds(v.coords.x, v.coords.y, v.coords.z + 1.0, "Press ~r~[G]~s~ To Open ~y~Locker~s~")
             DisableControlAction(0, 47)
