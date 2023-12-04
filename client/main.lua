@@ -15,19 +15,65 @@ RegisterNetEvent('esx:playerLoaded', function ()
 end)
 
 CreateThread(function()
-    for k, v in pairs(Config.LockerZone) do
-        v.point = lib.points.new(v.coords, v.DrawDistance)
-        function v.point:nearby()
-            DrawText3Ds(v.coords.x, v.coords.y, v.coords.z + 1.0, "Press ~r~[G]~s~ To Open ~y~Locker~s~")
-            DisableControlAction(0, 47)
-            if IsDisabledControlJustPressed(0, 47) then
-                lib.callback('ts-lockers:getLockers', false, function(data)
-                    TriggerEvent("ts-lockers:OpenMenu", { locker = k, info = data })
-                end, k)
+    if Config.Target == "OX" then
+        for k, v in pairs(Config.LockerZone) do
+            local length = v.length or 1.5
+            local width = v.width or 1.5 
+            exports['ox_target']:AddBoxZone("LockerZone"..k, v.coords, length, width, {
+                name="LockerZone"..k,
+                heading=v.heading,
+                debugPoly=Config.Debug,
+                minZ=v.minZ,
+                maxZ=v.maxZ
+            }, {
+                options = {
+                    {
+                        event = "ts-lockers:OpenMenu",
+                        icon = "fas fa-lock",
+                        label = "Open Locker",
+                        lockerArea = k
+                    },
+                },
+                distance = v.DrawDistance
+            })
+        end
+    elseif Config.Target == "QB" then
+        for k, v in pairs(Config.LockerZone) do
+            local length = v.length or 1.5
+            local width = v.width or 1.5 
+            exports['qb-target']:AddBoxZone("LockerZone" .. k, v.coords, length, width, {
+                heading = v.heading,
+                debugPoly = Config.Debug,
+                minZ = v.minZ,
+                maxZ = v.maxZ,
+            }, {
+                options = {
+                    {
+                        event = "ts-lockers:OpenMenu",   
+                        icon = "fas fa-lock",
+                        label = "Open Locker",
+                        lockerArea = k,
+                    },
+                },
+                distance = v.DrawDistance
+            })
+        end
+    else
+        for k, v in pairs(Config.LockerZone) do
+            v.point = lib.points.new(v.coords, v.DrawDistance)
+            function v.point:nearby()
+                DrawText3Ds(v.coords.x, v.coords.y, v.coords.z + 1.0, "Press ~r~[G]~s~ To Open ~y~Locker~s~")
+                DisableControlAction(0, 47)
+                if IsDisabledControlJustPressed(0, 47) then
+                    lib.callback('ts-lockers:getLockers', false, function(data)
+                        TriggerEvent("ts-lockers:OpenMenu", { locker = k, info = data })
+                    end, k)
+                end
             end
         end
     end
-end)
+end)    
+
 
 RegisterNetEvent("ts-lockers:OpenMenu", function(data)
     lib.registerContext({
