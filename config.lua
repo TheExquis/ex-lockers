@@ -16,5 +16,3 @@ Config.LockerZone = {
         DrawDistance = 5
     },
 }
-
-Config.DrawText = true -- Don't touch
