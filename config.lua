@@ -1,7 +1,8 @@
 Config = {}
-
+Config.Debug = false
 Config.QBInventory = false
 Config.OXInventory = true
+Config.Target = "QB" -- OX for OX_Target, QB for QB_Target, false for 3D
 Config.ChezzaInv = false
 Config.MaxSlots = 50
 Config.MaxWeight = 5000000
@@ -15,5 +16,3 @@ Config.LockerZone = {
         DrawDistance = 5
     },
 }
-
-Config.DrawText = true
