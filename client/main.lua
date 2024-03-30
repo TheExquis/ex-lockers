@@ -15,47 +15,27 @@ RegisterNetEvent('esx:playerLoaded', function ()
 end)
 
 CreateThread(function()
-    if Config.Target == "OX" then
+    if Config.Target then
         for k, v in pairs(Config.LockerZone) do
-            local length = v.length or 1.5
-            local width = v.width or 1.5 
-            exports['ox_target']:AddBoxZone("LockerZone"..k, v.coords, length, width, {
-                name="LockerZone"..k,
-                heading=v.heading,
-                debugPoly=Config.Debug,
-                minZ=v.minZ,
-                maxZ=v.maxZ
-            }, {
+            exports['ox_target']:addBoxZone({
+                coords = v.coords,
+                size = vec3(1.5,1.5,1.5),
+                rotation = 1,
+                debug = false,
+                drawSprite = true,
                 options = {
                     {
-                        event = "ts-lockers:OpenMenu",
-                        icon = "fas fa-lock",
-                        label = "Open Locker",
-                        lockerArea = k
-                    },
-                },
-                distance = v.DrawDistance
-            })
-        end
-    elseif Config.Target == "QB" then
-        for k, v in pairs(Config.LockerZone) do
-            local length = v.length or 1.5
-            local width = v.width or 1.5 
-            exports['qb-target']:AddBoxZone("LockerZone" .. k, v.coords, length, width, {
-                heading = v.heading,
-                debugPoly = Config.Debug,
-                minZ = v.minZ,
-                maxZ = v.maxZ,
-            }, {
-                options = {
-                    {
-                        event = "ts-lockers:OpenMenu",   
                         icon = "fas fa-lock",
                         label = "Open Locker",
                         lockerArea = k,
+                        distance = v.DrawDistance,
+                        onSelect = function ()
+                            lib.callback('ts-lockers:getLockers', false, function(data)
+                                TriggerEvent("ts-lockers:OpenMenu", { locker = k, info = data })
+                            end, k)
+                        end
                     },
-                },
-                distance = v.DrawDistance
+                }
             })
         end
     else
